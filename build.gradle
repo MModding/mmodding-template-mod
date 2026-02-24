@@ -1,0 +1,110 @@
+import com.mmodding.gradle.api.EnvironmentTarget
+
+plugins {
+	id 'maven-publish'
+	alias libs.plugins.fabric.loom
+	alias libs.plugins.mmodding.gradle
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+	archivesName = project.archives_base_name
+}
+
+repositories {
+	maven {
+		name = "JitPack"
+		url = "https://jitpack.io"
+	}
+	maven {
+		name = "QuiltMC"
+		url = "https://maven.quiltmc.org/repository/release"
+	}
+}
+
+dependencies {
+	minecraft libs.minecraft
+	mappings variantOf(libs.yarn.mappings) { classifier 'v2' }
+	modImplementation libs.fabric.loader
+
+	modImplementation libs.fabric.api
+	modImplementation libs.mmodding
+}
+
+mmodding {
+	configureFabricModJson {
+		name = "Template Mod"
+		namespace = "template"
+		group = "com.example"
+		icon = "assets/template/icon.png"
+		addAuthor("Project Author")
+		withContact {
+			it.homepage = "https://example.com"
+			it.sources = "https://github.com/MModding/mmodding-template-mod"
+			it.issues = "https://github.com/MModding/mmodding-template-mod/issues"
+		}
+		environment = EnvironmentTarget.ANY
+		withEntrypoints {
+			it.init("com.example.template.TemplateMod")
+		}
+		addMixin("template.mixins.json")
+		withDependencies {
+			it.javaVersion = ">=" + libs.versions.java.get()
+			it.minecraftVersion = "~" + libs.versions.minecraft.get()
+			it.fabricLoaderVersion = ">=" + libs.versions.fabric.loader.get()
+			it.fabricApiVersion = ">=" + libs.versions.fabric.api.get()
+			it.mmoddingLibraryVersion = ">=" + libs.versions.mmodding.get() + "-"
+		}
+	}
+	loomModRegistration()
+}
+
+processResources {
+	inputs.property "version", project.version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": inputs.properties.version
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 17
+}
+
+java {
+	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+	// if it is present.
+	// If you remove this line, sources will not be generated.
+	withSourcesJar()
+
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
+}
+
+jar {
+	inputs.property "archivesName", project.base.archivesName
+
+	from("LICENSE") {
+		rename { "${it}_${inputs.properties.archivesName}"}
+	}
+}
+
+// configure the maven publication
+publishing {
+	publications {
+		create("mavenJava", MavenPublication) {
+			artifactId = project.archives_base_name
+			from components.java
+		}
+	}
+
+	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+	repositories {
+		// Add repositories to publish to here.
+		// Notice: This block does NOT have the same function as the block in the top level.
+		// The repositories here will be used for publishing your artifact, not for
+		// retrieving dependencies.
+	}
+}
