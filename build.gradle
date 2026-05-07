@@ -6,7 +6,7 @@ plugins {
 	alias libs.plugins.mmodding.gradle
 }
 
-version = project.mod_version
+version = "$project.mod_version+${libs.versions.minecraft.get()}"
 group = project.maven_group
 
 base {
@@ -14,6 +14,7 @@ base {
 }
 
 repositories {
+	mavenCentral()
 	maven {
 		name = "JitPack"
 		url = "https://jitpack.io"
@@ -26,11 +27,16 @@ repositories {
 
 dependencies {
 	minecraft libs.minecraft
-	mappings variantOf(libs.yarn.mappings) { classifier 'v2' }
-	modImplementation libs.fabric.loader
+	implementation libs.fabric.loader
 
-	modImplementation libs.fabric.api
-	modImplementation libs.mmodding
+	implementation libs.mmodding
+	implementation libs.fabric.api
+}
+
+fabricApi {
+	configureDataGeneration() {
+		client = true
+	}
 }
 
 mmodding {
@@ -39,6 +45,7 @@ mmodding {
 		namespace = "template"
 		group = "com.example"
 		icon = "assets/template/icon.png"
+		license = "CC0 1.0 Universal"
 		addAuthor("Project Author")
 		withContact {
 			it.homepage = "https://example.com"
@@ -48,6 +55,7 @@ mmodding {
 		environment = EnvironmentTarget.ANY
 		withEntrypoints {
 			it.init("com.example.template.TemplateMod")
+			it.custom("fabric-datagen", "com.example.template.TemplateModDataGenerator")
 		}
 		addMixin("template.mixins.json")
 		withDependencies {
@@ -70,7 +78,7 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.release = 17
+	it.options.release = 25
 }
 
 java {
@@ -79,15 +87,17 @@ java {
 	// If you remove this line, sources will not be generated.
 	withSourcesJar()
 
-	sourceCompatibility = JavaVersion.VERSION_17
-	targetCompatibility = JavaVersion.VERSION_17
+	sourceCompatibility = JavaVersion.VERSION_25
+	targetCompatibility = JavaVersion.VERSION_25
 }
 
 jar {
-	inputs.property "archivesName", project.base.archivesName
+	inputs.property "archivesName", project.name
 
-	from("LICENSE") {
-		rename { "${it}_${inputs.properties.archivesName}"}
+	["LICENSE", "LICENSE.md"].each {
+		from(it) {
+			rename { "${it}_${project.name}"}
+		}
 	}
 }
 

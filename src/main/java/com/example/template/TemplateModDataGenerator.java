@@ -1,10 +1,17 @@
 package com.example.template;
 
-import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
+import com.mmodding.library.core.api.AdvancedContainer;
+import com.mmodding.library.datagen.api.ExtendedDataGeneratorEntrypoint;
+import com.mmodding.library.datagen.api.management.DataManager;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 
-public class TemplateModDataGenerator implements DataGeneratorEntrypoint {
+public class TemplateModDataGenerator implements ExtendedDataGeneratorEntrypoint {
 
 	@Override
-	public void onInitializeDataGenerator(FabricDataGenerator fabricDataGenerator) {}
+	public void setupManager(DataManager dataManager) {
+	}
+
+	@Override
+	public void onInitializeDataGenerator(AdvancedContainer mod, FabricDataGenerator generator, FabricDataGenerator.Pack pack) {
+	}
 }
