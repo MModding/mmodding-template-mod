@@ -8,7 +8,7 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 public class TemplateModDataGenerator implements ExtendedDataGeneratorEntrypoint {
 
 	@Override
-	public void setupManager(DataManager dataManager) {
+	public void setupManager(DataManager manager) {
 	}
 
 	@Override
