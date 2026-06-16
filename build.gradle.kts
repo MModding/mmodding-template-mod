@@ -74,9 +74,9 @@ tasks.named<ProcessResources>("processResources") {
 }
 
 tasks.withType(JavaCompile::class) {
-	task.options.encoding = "UTF-8"
+	options.encoding = "UTF-8"
 	// Minecraft 26.1 upwards uses Java 25.
-	task.options.release = libs.versions.java.get().toInt()
+	options.release = libs.versions.java.get().toInt()
 }
 
 java {
