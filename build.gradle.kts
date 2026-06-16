@@ -144,6 +144,7 @@ fun extractSupportedVersions() : List<String> {
 // Configures the mod publication
 publishMods {
 	if (providers.environmentVariable("CHANGELOG").isPresent) {
+		displayName = "${properties["mod_name"]} $version"
 		changelog.set(providers.environmentVariable("CHANGELOG").get())
 
 		val title = providers.environmentVariable("TITLE").get()
@@ -156,8 +157,6 @@ publishMods {
 		else {
 			type.set(STABLE)
 		}
-
-		displayName = "${properties["mod_name"]} $title"
 
 		file.set(tasks.named<Jar>("jar").get().archiveFile)
 		additionalFiles.from(tasks.named<Jar>("sourcesJar").get().archiveFile)
