@@ -159,7 +159,6 @@ publishMods {
 		}
 
 		file.set(tasks.named<Jar>("jar").get().archiveFile)
-		additionalFiles.from(tasks.named<Jar>("sourcesJar").get().archiveFile)
 
 		modLoaders.add("fabric")
 		modLoaders.add("quilt")
